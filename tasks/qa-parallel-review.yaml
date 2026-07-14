@@ -1,0 +1,25 @@
+name: qa-parallel-review
+description: >
+  Fan-out review used by the harness to exercise the parallel phase type.
+trigger: When the harness exercises the parallel phase type
+outputs:
+  - review_summary
+complexity: simple
+phases:
+  fanout:
+    type: parallel
+    tasks:
+      - qa-lint
+      - qa-types
+    next: consolidate
+  consolidate:
+    goal: "Consolidate the parallel branch results."
+    actions:
+      - "Summarize the lint and types branch results."
+      - type: write_result
+        status: done
+        summary: "Parallel review consolidated."
+    gate: "Both branch results summarized."
+    next: null
+terminal_state:
+  description: "Parallel review complete."

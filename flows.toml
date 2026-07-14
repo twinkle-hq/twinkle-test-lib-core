@@ -1,0 +1,12 @@
+[package]
+name    = "twinkle-hq/twinkle-test-lib-core"
+version = "0.1.0"
+
+[exports]
+plugins = { "*" = true }
+tasks   = { "qa-*" = true }
+
+# NOTE: a transitive [dependencies] on twinkle-hq/twinkle-test-valid-lib was removed
+# to unblock the core execution loop — transitive deps are never cloned (TWI-58),
+# which made MVS resolution throw and emptied the whole qa view. Restore once TWI-58
+# is fixed to re-enable the MVS-transitive lane (L1.2).

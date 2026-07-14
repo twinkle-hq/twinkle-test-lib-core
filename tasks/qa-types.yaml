@@ -1,0 +1,17 @@
+name: qa-types
+description: QA types branch — a parallel sub-task referenced by qa-parallel-review.
+outputs:
+  - types_result
+complexity: simple
+phases:
+  run:
+    goal: "Report the type-check status of the change."
+    actions:
+      - "Inspect the change and report type-check status."
+      - type: write_result
+        status: done
+        summary: "types ok"
+    gate: "Type-check status reported."
+    next: null
+terminal_state:
+  description: "Types branch complete."
