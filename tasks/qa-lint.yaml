@@ -1,0 +1,17 @@
+name: qa-lint
+description: QA lint branch — a parallel sub-task referenced by qa-parallel-review.
+outputs:
+  - lint_result
+complexity: simple
+phases:
+  run:
+    goal: "Report the lint status of the change."
+    actions:
+      - "Inspect the change and report lint status."
+      - type: write_result
+        status: done
+        summary: "lint ok"
+    gate: "Lint status reported."
+    next: null
+terminal_state:
+  description: "Lint branch complete."
