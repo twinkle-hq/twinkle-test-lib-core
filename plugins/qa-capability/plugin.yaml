@@ -1,0 +1,65 @@
+name: qa-capability
+description: QA passive capability — compiled into SKILL.md so the harness can assert it surfaced
+session:
+  capabilities:
+    - qa-parallel-review
+
+# Inline flows: libraries export only plugins+roles, so flows must ride inside a
+# plugin's flows[] to surface in the workspace view (LIBRARY_EXPORT_TYPES).
+# These two SMALL flows give the flow-engine something to dispatch/schedule so
+# the harness can exercise the dispatch / DAG / cron / trigger / contract caps
+# (CAP-flows-5/6/7/30/32/33/36/37/39/44/45/55). They reference the already-valid
+# qa-lint and qa-types tasks. No `worker` is bound on any job so dispatched
+# issues carry NO worker label and cannot be picked up by a runner.
+flows:
+  # --- Manual/dispatchable 2-node DAG: lint -> types (CAP-flows-5/6/4/30) ---
+  - name: qa-review-gate
+    version: 1
+    description: QA review gate — lint then type-check, a 2-node DAG dispatchable on demand.
+    on:
+      workflow_dispatch: true
+    jobs:
+      lint:
+        type: agent
+        task: qa-lint
+      types:
+        type: agent
+        task: qa-types
+        needs:
+          - lint
+
+  # --- Cron-triggered flow (CAP-flows-36 registration; CAP-flows-55 fire deferred) ---
+  - name: qa-nightly-lint
+    version: 1
+    description: QA nightly lint — a single-node flow registered on a cron schedule.
+    on:
+      schedule:
+        - cron: "17 4 * * *"
+    jobs:
+      lint:
+        type: agent
+        task: qa-lint
+
+  # --- Linear-triggered flow (CAP-flows-44 ingest -> pending) ---
+  - name: qa-on-linear-issue
+    version: 1
+    description: QA flow triggered by a Linear issue.create event.
+    on:
+      linear:
+        event: issue.create
+    jobs:
+      lint:
+        type: agent
+        task: qa-lint
+
+  # --- GitHub-triggered flow (CAP-flows-45 ingest -> pending) ---
+  - name: qa-on-github-pr
+    version: 1
+    description: QA flow triggered by a GitHub pull_request event.
+    on:
+      github:
+        event: pull_request
+    jobs:
+      lint:
+        type: agent
+        task: qa-lint
