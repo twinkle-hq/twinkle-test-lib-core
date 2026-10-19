@@ -1,0 +1,18 @@
+name: core-system
+description: "QA fixture: the library's system-tier plugin (system: true), owning one skill file the flows routes serve"
+system: true
+
+# No result gate. The result.md format is declared once, in
+# lib/protocol/result-contract.json, and the runner generates the session's Stop
+# gate and the agent's skill from it (render_result_stop_hook,
+# render_result_skill). The SessionStart rules and the blocking Stop hook this
+# fixture carried accepted only the retired v1 statuses, so a qa session that
+# attached it was told two contradicting formats.
+#
+# skills/write-result/SKILL.md stays listed only because the smoke lane
+# CAP-flows-22 (tests/scenarios/smoke/flows.test.mjs) serves it by this path from
+# this plugin and asserts `name: write-result`. Its body teaches no format: it
+# points the agent at the runner's twinkle:result skill.
+session:
+  skills:
+    - skills/write-result/SKILL.md
